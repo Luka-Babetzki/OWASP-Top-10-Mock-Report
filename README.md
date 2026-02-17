@@ -29,7 +29,7 @@ On website
 2. Added 1 item to my basket
 3. Viewed basket
 
-On Burp Suite
+On Burpsuite
 4. Intercepted `/rest/basket/7` which has the `id` of 7 within the packet
 5. Send the packet to repeater
 6. Changed `/rest/basket/7` to `/rest/basket/1` and sent
@@ -47,18 +47,49 @@ On Burp Suite
 - Dirbuster to expose directories visible and accessible on client-side?
 - After A05, I can access the `/#/administration` panel from the url bar
 
+- Missing security headers?
+    - CSP
+    - HSTS
+- Permissive CORS
+- See HTTP response
+
+
 - /robots.txt reveal /ftp, which allows for file navigation, veiwing and downloading of files
 - Sensitive file types include .kdbx, .bak, .pyc
 - No authenitcation required
 - Can download .kdbx file for offline decryption (Most likely contains all passwords)
  
-
 - [ ] Screenshot of admin panel
 
 
 #### A03 - Software Supply Chain Failures
 - Outdated software / os / dependencies? -> vulnerability -> exploit
-- Banner grabbing?
+Vulnerability: Version Disclosure via Unauthenticated API Endpoint
+
+Steps:
+
+On Burp Suite:
+1. Intercepted request to /rest/admin/application-version
+2. Sent packet to Repeater
+3. Removed the If-None-Match header to bypass cache
+4. Sent request
+5. Response returned: {"version":"19.1.1"}
+
+Key Finding:
+- Application version (19.1.1) exposed without authentication
+- Endpoint accessible to any unauthenticated user
+- Enables attackers to identify exact version for targeted exploit research
+- Violates secure supply chain practices by leaking version information
+
+Why This Matters:
+- Attackers can search for known CVEs specific to version 19.1.1
+- Facilitates reconnaissance for supply chain attacks
+- Makes it easier to identify vulnerable dependencies
+- Version information should be restricted or not exposed at all
+
+Evidence Needed:
+- [ ] Screenshot of Burp Repeater showing request to /rest/admin/application-version
+- [ ] Screenshot of response body showing "version":"19.1.1"
 
 
 #### A04 - Cryptographic Failures
